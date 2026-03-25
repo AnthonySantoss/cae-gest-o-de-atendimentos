@@ -2,6 +2,14 @@
 
 Sistema completo para gestão de atendimentos, formalização e acompanhamento de micro e pequenos empreendedores. A plataforma é projetada com uma interface limpa e moderna (Glassmorphism), oferecendo aos gestores e consultores ferramentas robustas para conduzir treinamentos, mentorias e prestar serviços gerais aos cidadãos.
 
+## 👥 Alunos
+
+- Anthony Gabriel Silva dos Santos — 16034688
+- Paulo César dos Santos Silva — 16031187
+- Caio Nunes Gomes Figueiredo — 16033723
+- Tiago Pereira de Oliveira — 16031203
+- Clara Figueiredo — 16033722
+
 ## 🚀 Principais Funcionalidades
 
 - **Dashboard Integrado:** Visão geral da fila de atendimentos online, métricas e últimos serviços prestados.
