@@ -4,6 +4,7 @@ import { Users, Filter, History, UserCircle, Plus, X, Loader2, Search, Mail, Pho
 import { empreendedoresApi, type Empreendedor, type CreateEmpreendedorPayload } from '../../lib/api.js';
 import { cn } from '../../lib/utils.js';
 import { Modal } from '../dashboard/DashboardPage.js';
+import toast from 'react-hot-toast';
 
 const STATUS_COLORS: Record<string, string> = {
   'Ativo':           'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -29,26 +30,32 @@ export default function EmpreendedoresPage({
   const [filterStatus, setFilterStatus] = useState('');
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const fetchData = async (p = 1) => {
+  const fetchData = async (p = 1, search = searchTerm, status = filterStatus, tipo = filterTipo) => {
     setLoading(true);
+    setFetchError(null);
     try {
-      const res = await empreendedoresApi.list({ 
-        search: searchTerm, 
-        status: filterStatus || undefined,
-        tipo: filterTipo || undefined,
-        page: p, 
-        per_page: 15 
+      const res = await empreendedoresApi.list({
+        search: search || undefined,
+        status: status || undefined,
+        tipo: tipo || undefined,
+        page: p,
+        per_page: 15,
       });
       setItems(res.data);
       setTotal(res.total);
       setPage(p);
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+    } catch (e) {
+      console.error('[EmpreendedoresPage] Erro ao buscar empreendedores:', e);
+      setFetchError('Não foi possível carregar os dados. Verifique a conexão com o servidor.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    const t = setTimeout(() => fetchData(1), 300);
+    const t = setTimeout(() => fetchData(1, searchTerm, filterStatus, filterTipo), 300);
     return () => clearTimeout(t);
   }, [searchTerm, filterStatus, filterTipo]);
 
@@ -68,10 +75,13 @@ export default function EmpreendedoresPage({
     };
     try {
       await empreendedoresApi.create(payload);
+      toast.success('Empreendedor cadastrado com sucesso!');
       setIsModalOpen(false);
       fetchData(1);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao cadastrar.');
+      const msg = err instanceof Error ? err.message : 'Erro ao cadastrar.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setCreating(false);
     }
@@ -108,6 +118,12 @@ export default function EmpreendedoresPage({
             </button>
           </div>
         </div>
+
+        {fetchError && (
+          <div className="mb-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+            {fetchError}
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">

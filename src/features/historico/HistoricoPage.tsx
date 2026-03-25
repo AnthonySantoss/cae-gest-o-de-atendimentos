@@ -21,14 +21,40 @@ export default function HistoricoPage({
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setPage(1);
-    fetchData(1);
+    setError(null);
+    let cancelled = false;
+
+    const doFetch = async () => {
+      setLoading(true);
+      try {
+        const res = await atendimentosApi.getHistorico({
+          empreendedor_id: selectedEmp?.id,
+          page: 1,
+          per_page: 15,
+        });
+        if (!cancelled) {
+          setItems(res.data);
+          setTotal(res.total);
+        }
+      } catch (e) {
+        console.error('[HistoricoPage] Erro ao buscar histórico:', e);
+        if (!cancelled) setError('Não foi possível carregar o histórico. Verifique a conexão com o servidor.');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    doFetch();
+    return () => { cancelled = true; };
   }, [selectedEmp]);
 
-  const fetchData = async (p: number) => {
+  const fetchPage = async (p: number) => {
     setLoading(true);
+    setError(null);
     try {
       const res = await atendimentosApi.getHistorico({
         empreendedor_id: selectedEmp?.id,
@@ -37,8 +63,13 @@ export default function HistoricoPage({
       });
       setItems(res.data);
       setTotal(res.total);
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+      setPage(p);
+    } catch (e) {
+      console.error('[HistoricoPage] Erro ao paginar:', e);
+      setError('Erro ao carregar página. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatDate = (d: string) =>
@@ -162,7 +193,7 @@ export default function HistoricoPage({
           {Array.from({ length: Math.ceil(total / 15) }).map((_, i) => (
             <button
               key={i}
-              onClick={() => { setPage(i + 1); fetchData(i + 1); }}
+              onClick={() => fetchPage(i + 1)}
               className={cn('w-8 h-8 rounded-lg text-xs font-medium transition-colors',
                 page === i + 1 ? 'glass-button text-white' : 'glass-button-secondary text-slate-400'
               )}

@@ -126,8 +126,8 @@ export default function RelatoriosPage() {
               <PieChart>
                 <Pie
                   data={servicos}
-                  cx="50%" cy="45%"
-                  innerRadius={55} outerRadius={80}
+                  cx="50%" cy="50%"
+                  innerRadius={45} outerRadius={65}
                   paddingAngle={4} dataKey="value" stroke="none"
                 >
                   {servicos.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Loader2, Plus } from 'lucide-react';
 import { atendimentosApi, cursosApi, empreendedoresApi, type Servico } from '../../lib/api.js';
 import { Modal } from './DashboardPage.js';
+import toast from 'react-hot-toast';
 
 export default function NovoAtendimentoModal({
   isOpen, onClose, onSuccess
@@ -45,10 +46,12 @@ export default function NovoAtendimentoModal({
         servico_id: parseInt(form.get('servico_id') as string) || undefined,
         observacoes: form.get('obs') as string || undefined,
       });
+      toast.success('Atendimento criado com sucesso!');
       onSuccess?.();
       handleClose();
     } catch(err) {
-      alert(err instanceof Error ? err.message : 'Erro ao criar atendimento.');
+      const msg = err instanceof Error ? err.message : 'Erro ao criar atendimento.';
+      toast.error(msg);
     } finally {
       setCreatingAtt(false);
     }

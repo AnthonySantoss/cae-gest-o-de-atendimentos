@@ -11,6 +11,7 @@ import {
 import { atendimentosApi, relatoriosApi, empreendedoresApi, type FilaItem, type HistoricoItem, type Kpis, type EvolucaoSemanalItem } from '../../lib/api.js';
 import { cn } from '../../lib/utils.js';
 import { useAuth } from '../../lib/auth.js';
+import toast from 'react-hot-toast';
 
 const STATUS_MAP = {
   aguardando:     { label: 'Aguardando',    cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
@@ -66,15 +67,25 @@ export default function DashboardPage({
   }, [refreshCounter, fetchFila]);
 
   const handleChamar = async (id: number) => {
-    await atendimentosApi.updateStatus(id, 'em_atendimento', user?.id);
-    setFila(prev => prev.map(f => f.id === id ? { ...f, status: 'em_atendimento' } : f));
-    setSelectedItem(null);
+    try {
+      await atendimentosApi.updateStatus(id, 'em_atendimento', user?.id);
+      setFila(prev => prev.map(f => f.id === id ? { ...f, status: 'em_atendimento' } : f));
+      setSelectedItem(null);
+      toast.success('Atendimento iniciado!');
+    } catch (e) {
+      toast.error('Erro ao iniciar atendimento.');
+    }
   };
 
   const handleFinalizar = async (id: number) => {
-    await atendimentosApi.updateStatus(id, 'concluido');
-    setFila(prev => prev.filter(f => f.id !== id));
-    setSelectedItem(null);
+    try {
+      await atendimentosApi.updateStatus(id, 'concluido');
+      setFila(prev => prev.filter(f => f.id !== id));
+      setSelectedItem(null);
+      toast.success('Atendimento finalizado com sucesso!');
+    } catch (e) {
+      toast.error('Erro ao finalizar atendimento.');
+    }
   };
 
 

@@ -34,4 +34,27 @@ export const UsuariosRepository = {
     `);
     return rows;
   },
+
+  async create(data: { nome: string; email: string; perfil: string; especialidade?: string; senha_hash: string }): Promise<Usuario> {
+    const { rows } = await pool.query(`
+      INSERT INTO usuarios (nome, email, perfil, especialidade, senha_hash, ativo)
+      VALUES ($1, $2, $3, $4, $5, true)
+      RETURNING *
+    `, [data.nome, data.email, data.perfil, data.especialidade ?? null, data.senha_hash]);
+    return rows[0];
+  },
+
+  async update(id: number, data: Partial<Omit<Usuario, 'id' | 'criado_em' | 'atualizado_em'>> & { senha_hash?: string }): Promise<Usuario | null> {
+    const fields = Object.entries(data).filter(([, v]) => v !== undefined);
+    if (fields.length === 0) return this.findById(id);
+
+    const sets = fields.map(([k], i) => `${k} = $${i + 2}`).join(', ');
+    const values = fields.map(([, v]) => v);
+
+    const { rows } = await pool.query(
+      `UPDATE usuarios SET ${sets} WHERE id = $1 RETURNING *`,
+      [id, ...values]
+    );
+    return rows[0] ?? null;
+  },
 };

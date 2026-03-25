@@ -16,6 +16,7 @@ import EncaminhamentosPage from './features/encaminhamentos/EncaminhamentosPage.
 import RelatoriosPage from './features/relatorios/RelatoriosPage.js';
 import NovoAtendimentoModal from './features/dashboard/NovoAtendimentoModal.js';
 import type { Empreendedor } from './lib/api.js';
+import { Toaster } from 'react-hot-toast';
 
 type Tab = 'dashboard' | 'empreendedores' | 'historico' | 'consultores' | 'encaminhamentos' | 'relatorios';
 
@@ -59,6 +60,20 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex text-slate-100 font-sans selection:bg-indigo-500/30">
+      <Toaster 
+        position="top-right" 
+        toastOptions={{ 
+          style: { color: '#fff' },
+          success: {
+            style: { background: '#059669', border: '1px solid #047857' },
+            iconTheme: { primary: '#fff', secondary: '#059669' }
+          },
+          error: {
+            style: { background: '#dc2626', border: '1px solid #b91c1c' },
+            iconTheme: { primary: '#fff', secondary: '#dc2626' }
+          }
+        }} 
+      />
       {/* Background */}
       <div className="bg-shape bg-shape-1" />
       <div className="bg-shape bg-shape-2" />

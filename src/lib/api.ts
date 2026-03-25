@@ -5,6 +5,15 @@
 
 const BASE_URL = '/api';
 
+/** Constrói query string filtrando campos undefined/null */
+function buildQs(params: Record<string, unknown>): string {
+  const clean: Record<string, string> = {};
+  for (const [k, v] of Object.entries(params)) {
+    if (v !== undefined && v !== null) clean[k] = String(v);
+  }
+  return new URLSearchParams(clean).toString();
+}
+
 function getToken(): string | null {
   return localStorage.getItem('cae_token');
 }
@@ -59,7 +68,7 @@ export const atendimentosApi = {
   getFila: () => request<{ data: FilaItem[] }>('/atendimentos/fila'),
 
   getHistorico: (params: HistoricoParams = {}) => {
-    const qs = new URLSearchParams(params as Record<string, string>).toString();
+    const qs = buildQs(params as Record<string, unknown>);
     return request<PaginatedResult<HistoricoItem>>(`/atendimentos/historico?${qs}`);
   },
 
@@ -79,7 +88,7 @@ export const atendimentosApi = {
 // ── Empreendedores ──────────────────────────────────────────
 export const empreendedoresApi = {
   list: (params: ListParams = {}) => {
-    const qs = new URLSearchParams(params as Record<string, string>).toString();
+    const qs = buildQs(params as Record<string, unknown>);
     return request<PaginatedResult<Empreendedor>>(`/empreendedores?${qs}`);
   },
 
@@ -105,6 +114,18 @@ export const empreendedoresApi = {
 // ── Consultores ─────────────────────────────────────────────
 export const consultoresApi = {
   list: () => request<{ data: Consultor[] }>('/consultores'),
+
+  create: (data: { nome: string; email: string; perfil: string; especialidade?: string }) =>
+    request<{ data: Consultor; tempPassword?: string }>('/consultores', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  update: (id: number, data: { nome?: string; email?: string; perfil?: string; especialidade?: string; reset_senha?: boolean }) =>
+    request<{ data: Consultor; tempPassword?: string }>(`/consultores/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
 };
 
 // ── Cursos & Encaminhamentos ────────────────────────────────

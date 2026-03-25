@@ -4,6 +4,7 @@ import { GraduationCap, Calendar, MapPin, Users, ChevronRight, X, Loader2 } from
 import { cursosApi, empreendedoresApi, type Curso, type Empreendedor } from '../../lib/api.js';
 import { cn } from '../../lib/utils.js';
 import { Modal } from '../dashboard/DashboardPage.js';
+import toast from 'react-hot-toast';
 
 const TIPO_COLORS: Record<string, string> = {
   'Curso':     'bg-blue-500/10 text-blue-400 border-blue-500/20',
@@ -49,9 +50,11 @@ export default function EncaminhamentosPage() {
       });
       const r = await cursosApi.listCursos();
       setCursos(r.data);
+      toast.success('Encaminhamento realizado com sucesso!');
       closeModal();
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao encaminhar');
+      const msg = err instanceof Error ? err.message : 'Erro ao encaminhar';
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }

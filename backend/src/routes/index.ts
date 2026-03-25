@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { AuthController, LoginSchema }         from '../controllers/auth.controller.js';
 import { AtendimentosController, CreateAtendimentoSchema, UpdateStatusSchema, HistoricoQuerySchema } from '../controllers/atendimentos.controller.js';
 import { EmpreendedoresController, CreateEmpreendedorSchema, ListQuerySchema } from '../controllers/empreendedores.controller.js';
-import { ConsultoresController }               from '../controllers/consultores.controller.js';
+import { ConsultoresController, CreateConsultorSchema, UpdateConsultorSchema } from '../controllers/consultores.controller.js';
 import { CursosController }                    from '../controllers/cursos.controller.js';
 import { RelatoriosController }                from '../controllers/relatorios.controller.js';
 import { authMiddleware }                      from '../middlewares/auth.middleware.js';
@@ -30,6 +30,8 @@ router.patch('/empreendedores/:id',     authMiddleware, EmpreendedoresController
 
 // ── Consultores ─────────────────────────────────────────────
 router.get('/consultores', authMiddleware, ConsultoresController.list);
+router.post('/consultores', authMiddleware, validate(CreateConsultorSchema), ConsultoresController.create);
+router.patch('/consultores/:id', authMiddleware, validate(UpdateConsultorSchema), ConsultoresController.update);
 
 // ── Cursos & Encaminhamentos ────────────────────────────────
 router.get('/cursos',                authMiddleware, CursosController.listCursos);
