@@ -97,7 +97,7 @@ Pronto!
 
 ## 📂 Estrutura de Diretórios Básica
 
-\`\`\`text
+\`\`\`
 /
 ├── backend/               # Motor da aplicação (Node/Express API)
 │   ├── src/
